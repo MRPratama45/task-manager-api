@@ -1,2 +1,19 @@
+--- DAY 1 ---
 1. buat struktur folder
 2. konfig file .env, .gitignore, package.json
+3. buat koneksi db (file src/config/database.js)
+4. buat server (src/server.js)
+
+
+--- DAY 2 ---
+1. tambah struktur folder yg sudah ada (controllers, middleware, routes, utils)
+2. paham JWT dan bcrypt
+3. membuat endpoint registrasi
+4. membuat endpoint login
+5. password ter hash di database
+6. user bisa login dan dapat token
+7. step pengerjaan: 
+  - kerjakan di src/utils/generateToken.js untuk generate Token
+  - kerjakan di src/controllers/authController.js untuk membuat alur regis, login, hash password, simpan data ke db, generate/buat token, dan respon 
+  - kerjakan di src/routes/authRoutes.js untuk membuat route dan http methid registrasi dan login
+  - update di src/server.js untuk menambahkan routes yg telah di buat

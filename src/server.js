@@ -4,9 +4,11 @@ const helmet = require('helmet');
 require('dotenv').config();
 
 const {testConnection} = require('./config/database');
+const authRoutes =  require('./routes/authRoutes')
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
 
 // middleware
 app.use(helmet());
@@ -23,6 +25,9 @@ app.get('/', (req, res) => {
   });
 });
 
+
+// routes
+app.use('/api/auth', authRoutes);
 
 // health cek route
 app.get('/api/health', (req, res) => {

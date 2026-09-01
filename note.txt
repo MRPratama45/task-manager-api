@@ -1,0 +1,2 @@
+1. buat struktur folder
+2. konfig file .env, .gitignore, package.json

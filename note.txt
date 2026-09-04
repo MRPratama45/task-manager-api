@@ -6,7 +6,7 @@
 
 
 --- DAY 2 ---
-1. tambah struktur folder yg sudah ada (controllers, middleware, routes, utils)
+1. tambah struktur folder yg sudah ada (controllers (untuk logika), middleware (verifikasi token), routes (untuk routing), utils (buat token))
 2. paham JWT dan bcrypt
 3. membuat endpoint registrasi
 4. membuat endpoint login
@@ -17,3 +17,21 @@
   - kerjakan di src/controllers/authController.js untuk membuat alur regis, login, hash password, simpan data ke db, generate/buat token, dan respon 
   - kerjakan di src/routes/authRoutes.js untuk membuat route dan http methid registrasi dan login
   - update di src/server.js untuk menambahkan routes yg telah di buat
+8. alur kerja  Regstrasi : Client → server.js → authRoutes.js → authController.js → database.js → MySQL
+                                                              ↓
+Client ← server.js ← authController.js ←──────────────────────┘
+9. alur kerja  Login :Client → server.js → authRoutes.js → authController.js → database.js → MySQL
+                                                              ↓
+Client ← server.js ← authController.js ←──────────────────────┘
+                         ↓
+                  generateToken.js (buat JWT)
+
+10. urutan pengerjaan : controller (pikiran logika) > utils (optional; fungsi bantuan) > routes (daftarkan end point) > server.js (hubungkan ke server) > tes (verifikasi)
+
+STEP 1: DATABASE      → Cek/update tabel di DBeaver
+STEP 2: CONTROLLER    → Buat logika bisnis
+STEP 3: UTILS         → Buat fungsi bantuan (jika controller butuh)
+STEP 4: ROUTES        → Daftarkan endpoint
+STEP 5: SERVER.JS     → Hubungkan route ke server
+STEP 6: TEST          → Verifikasi dengan Thunder Client
+STEP 7: COMMIT        → Simpan progress ke Git

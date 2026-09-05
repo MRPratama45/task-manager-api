@@ -1,6 +1,6 @@
 const express = require('express')
-const authMiddleware = require('../midlleware/authMiddleware')
-const {getAllTasks, createTask} = require('../controellers/taskController')
+const authMiddleware = require('../middleware/authMiddleware')
+const {getAllTasks, createTask} = require('../controllers/taskController')
 
 const router = express.Router()
 

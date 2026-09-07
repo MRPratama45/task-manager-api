@@ -27,7 +27,7 @@ Client ← server.js ← authController.js ←───────────�
                   generateToken.js (buat JWT)
 
 10. urutan pengerjaan : controller (pikiran logika) > utils (optional; fungsi bantuan) > routes (daftarkan end point) > server.js (hubungkan ke server) > tes (verifikasi)
-
+--- FLOW DAY 2 ---
 STEP 1: DATABASE      → Cek/update tabel di DBeaver
 STEP 2: CONTROLLER    → Buat logika bisnis
 STEP 3: UTILS         → Buat fungsi bantuan (jika controller butuh)
@@ -35,3 +35,65 @@ STEP 4: ROUTES        → Daftarkan endpoint
 STEP 5: SERVER.JS     → Hubungkan route ke server
 STEP 6: TEST          → Verifikasi dengan Thunder Client
 STEP 7: COMMIT        → Simpan progress ke Git
+--- FLOW DAY 2 ---
+
+--- DAY 3 ---
+1. paham apa itu middleware (fungsi yang berjalan di tengah antara request dan response.)
+2. buat authMiddleware.js (folder middleware)
+3. verifiy JWT token (ada di authMiddleware.js)
+4. proteksi route (ada di testRoutes.js)
+5. attach (menempelkan) user data ke request
+6. step pengerjaan
+  - buat folder middleware dan file authMiddleware
+  - buat route yg akan di proteksi
+  - update server.js (bagian route)
+
+7. cara pakai middleware
+  - per route 
+  // routes/taskRoutes.js
+const express = require('express');
+const authMiddleware = require('../middleware/authMiddleware');
+const { getAllTasks } = require('../controllers/taskController');
+
+const router = express.Router();
+
+// Proteksi semua route di file ini
+router.use(authMiddleware);  // ← Semua route di bawah ini wajib login
+
+router.get('/', getAllTasks);
+
+module.exports = router;
+
+  - per endpoint
+// Hanya endpoint tertentu yang diproteksi
+router.get('/', authMiddleware, getAllTasks);  // Wajib login
+router.get('/public', getPublicTasks);         // Bebas diakses
+
+  - lalu di server utuk semua route yg akan di proteksi
+// Proteksi semua route /api/tasks
+app.use('/api/tasks', authMiddleware, taskRoutes);
+
+8. flow 
+TANPA TOKEN:
+Client → server.js → routes → middleware → 401 "Token tidak ditemukan"
+
+DENGAN TOKEN VALID:
+Client → server.js → routes → middleware → verify OK → controller → response
+                                          │
+                                          └── req.user = { userId: 1 }
+
+--- Day 4 ---
+Paham REST API naming conventions
+
+✅ Paham input validation
+
+✅ Paham query parameters
+
+✅ Buat endpoint GET /api/tasks (ambil semua task user)
+
+✅ Buat endpoint POST /api/tasks (buat task baru)
+
+✅ Test dengan Thunder Client
+
+--- DAY 5 ---
+1. Tambahkan 3 fungsi baru: getTaskById, updateTask, deleteTask DI taskController.js

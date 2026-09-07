@@ -20,13 +20,13 @@ const getAllTasks = async (req, res) => {
     }
 
     // sorting 
-    if(sort && order){
+    if(sort && order){ // cek apakah client mengirimkan params sort dan order
       query += ` ORDER BY ${sort} ${order}`
     } else {
       query += ' ORDER BY created_at DESC'
     }
 
-    const [tasks] = await db.query(query, params)
+    const [tasks] = await db.query(query, params) // menjalankan query ke database dengan menunggu hasil. [tasks] = hasil query untuk mengambil array hasil
 
     res.json({
       status: 'success',
@@ -49,6 +49,7 @@ const getTaskById = async (req, res) => {
     const userId= req.user.userId
     const {id} = req.params
 
+    // Query task dengan id DAN userId. Ini memastikan user hanya bisa akses task miliknya
     const [tasks] = await db.query(
       'SELECT * FROM tasks WHERE id = ? AND user_id = ?',
       [id, userId]
@@ -86,7 +87,7 @@ const createTask = async (req, res) => {
     const {title, description, status, due_date} = req.body
 
     // validasi semua input 
-    if(!title || !description || !status || !title.trim() === '' ){
+    if(!title || !title.trim() === ''){
       return res.status(400).json({
         status: 'error',
         message: 'Title, description, status wajib di isikan'
@@ -266,7 +267,7 @@ const updateTask = async (req, res) => {
     )
 
     // ambil task yg sudah di update
-    const [updateTask] = await db.query(
+    const [updatedTask] = await db.query(
       'SELECT * FROM tasks WHERE id = ?',
       [id]
     )
@@ -274,7 +275,7 @@ const updateTask = async (req, res) => {
     res.status(200).json({
       status: 'success',
       message: 'Task berhasil di update',
-      data: updateTask[0]
+      data: updatedTask[0]
     })
 
   }

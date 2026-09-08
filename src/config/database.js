@@ -1,7 +1,10 @@
+// import package mysql2 (koneksi ke MySQL)
 const mysql = require('mysql2');
+
+// import dotenv (baca file .env)
 require('dotenv').config();
 
-// buat cenecction pool
+// buat cenecction pool (kumpulan koneksi siap pakai)
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -13,12 +16,13 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// convert pool ke promise untuk async/await
+// convert pool ke promise (biar bisa pakai async/await)
 const db = pool.promise();
 
-// tes koneksi 
+// fungsi tes koneksi 
 const testConnection = async () =>{
   try{
+    // querry sederhana untuk test
     const [rows] = await db.query('SELECT 1 + 1 AS result')
     console.log('Database Connected Successfully');
     console.log('Test query result:',rows[0].result);
@@ -30,6 +34,7 @@ const testConnection = async () =>{
   }
 };
 
+// export db & testConnection
 module.exports = {
   db, 
   testConnection

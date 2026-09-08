@@ -1,13 +1,19 @@
+// import bcrypt (hash & compare password)
 const bcrypt = require('bcryptjs');
+
+// import db (koneksi db)
 const {db} =  require('../config/database')
+
+// import generateToken (buat token/JWT)
 const generateToken = require('../utils/generateToken');
 
-// REGISTER
+// ======================== REGISTER ======================
 const registrasi = async (req, res)=> {
   try{
+    // 1. ambil input dari body
     const {name, email, password} = req.body
 
-    // validasi input
+    // 2. validasi: semua inputan/fields wajib diisi
     if(!name || !email || !password){
       return res.status(400).json({
         status: 'error',
@@ -15,13 +21,13 @@ const registrasi = async (req, res)=> {
       })
     }
 
-    // cek email sudah terdaftar atau belum
+    // 3. cek email sudah terdaftar atau belum?
     const [existingUser] = await db.query(
       'SELECT * FROM users WHERE email = ?',
       [email]
     )
 
-    // jika email sudah terdaftar, kembalikan error
+    // 3a. jika email sudah terdaftar, kembalikan error
     if(existingUser.length >0) {
       return res.status(400).json({
         status: 'error',
@@ -29,16 +35,16 @@ const registrasi = async (req, res)=> {
       })
     }
 
-    // hash password
+    // 4. hash password (10 = salt rounds)
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    // simpan user baru ke database
+    // 5. simpan user baru ke database
     const [result] = await db.query(
       'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
       [name, email, hashedPassword]
     )
 
-    // respon berhasil daftar user baru
+    // 6. respon berhasil daftar user baru
     res.status(201).json({
       status: 'success',
       message: 'User berhasil didaftarkan',
@@ -58,12 +64,13 @@ const registrasi = async (req, res)=> {
   }
 }
 
-// LOGIN
+// ======================== LOGIN =========================
 const login = async (req, res) => {
   try{
+    // 1. ambil input dari body
     const {email, password} = req.body
 
-    // validasi input
+    // 2. validasi input
     if(!email || !password){
       return res.status(400).json({
         status: 'error',
@@ -71,13 +78,13 @@ const login = async (req, res) => {
       })
     }
 
-    // cari user berdasarkan email
+    // 3. cari user berdasarkan email
     const [users] = await db.query(
       'SELECT * FROM users WHERE email = ?',
       [email]
     )
 
-    // jika user tidak ditemukan, kembalikan error
+    // 3a. jika user tidak ditemukan, kembalikan error
     if(users.length === 0){
       return res.status(401).json({
         statsus: 'error',
@@ -87,7 +94,7 @@ const login = async (req, res) => {
 
     const user = users[0]
 
-    // cek password
+    // 4. cek password
     const isPasswordValid = await bcrypt.compare(password, user.password)
 
     // jika password salah, kembalikan error
@@ -98,10 +105,10 @@ const login = async (req, res) => {
       })
     }
 
-    // buat token
+    // 5. buat token
     const token = generateToken(user.id)
 
-    // respon berhasil login
+    // 6. respon berhasil login
     res.json({
       status: 'success',
       message: 'Login berhasil',
@@ -122,6 +129,7 @@ const login = async (req, res) => {
   }
 }
 
+// export registrasi & login
 module.exports = {
   registrasi,
   login

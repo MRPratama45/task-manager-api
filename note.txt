@@ -96,4 +96,22 @@ Paham REST API naming conventions
 ✅ Test dengan Thunder Client
 
 --- DAY 5 ---
-1. Tambahkan 3 fungsi baru: getTaskById, updateTask, deleteTask DI taskController.js
+1. Tambahkan 3 fungsi baru: getTaskById, updateTask, deleteTask Di taskController.js
+2. update server.js
+
+--- DAY 6 ---
+1. review semua file dengan ditambahkan komentar tiap baris
+2. alur pengerjaan
+  a. setup database (create database task_manager > create tabel users > create tabel tasks )
+  b. setup project (npm init -y > npm install express mysql2 dotenv cors helmet bcryptjs jsonwebtoken > npm install -D nodemon)
+  c. config database (src/config/database.js)
+  d. utils untuk fungsi bantuan (src/utils/generateToken.js)
+  e. middleware Auth (src/middleware/authMiddleware.js)
+  f. controller (src/controllers/authController.js)
+  g. routes (src/routes/authRoutes.js)
+  h. server (src/server.js)
+  i. test (regis > login > CRUD di postman)
+  j. commit & push (git aad . > git commit -m "isi pesan" > git push origin "nama branch")
+
+3. Diagram alur lengkap
+  DATABASE → CONFIG → UTILS → MIDDLEWARE → CONTROLLERS → ROUTES → SERVER → TEST

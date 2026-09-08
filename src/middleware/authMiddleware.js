@@ -1,5 +1,7 @@
+// import package jsonwebtoken (verifikasi token)
 const jwt = require('jsonwebtoken')
 
+// middleware untuk proteksi route
 const authMiddleware = (req, res, next) => {
   try{
     // 1. ambil header authorization
@@ -13,7 +15,7 @@ const authMiddleware = (req, res, next) => {
       })
     }
 
-    // 3. format header: bearer blablabla dan ambil tokennya saja setelah kata bearer
+    // 3. format header: bearer <token> dan ambil tokennya saja setelah kata bearer
     const token = authHeader.split(' ')[1]
 
     // 4. cek: apakah token ada setelah kata bearer
@@ -24,10 +26,10 @@ const authMiddleware = (req, res, next) => {
       })
     }
 
-    // 5. verifikasi token
+    // 5. verifikasi token dengan secret
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
 
-    // 6. jika token valid, maka simpan data user ke request
+    // 6. jika token valid, maka simpan data user ke req.user
     req.user = decoded
 
     // 7. lanjut ke controller
@@ -42,4 +44,5 @@ const authMiddleware = (req, res, next) => {
   }
 }
 
+// export middleware
 module.exports = authMiddleware

@@ -86,31 +86,48 @@ const createTask = async (req, res) => {
     // ambil input dari body
     const {title, description, status, due_date} = req.body
 
-    // validasi semua input 
-    if(!title || !title.trim() === ''){
+    // validasi title (wajib isi)
+    if(!title || title.trim() === ''){
       return res.status(400).json({
         status: 'error',
-        message: 'Title, description, status wajib di isikan'
+        message: 'Title wajib di isikan'
       })
     }
 
-    // validasi minimal karakter inputan
-    if(title.length < 3 || description.length < 3){
+    // validasi minimal karakter inputan title
+    if(title.length < 3){
       return res.status(400).json({
         status: 'error',
-        message: 'Title dan description minimal 3 karakter'
+        message: 'Title minimal 3 karakter'
       })
     }
 
     // validasi maximal karakter inputan
-    if(title.length > 50 || description.length > 255){
+    if(title.length > 50){
       return res.status(400).json({
         status: 'error',
-        message: 'Title maksimal 50 karakter dan description maksimal 255 karakter'
+        message: 'Title maksimal 50 karakter'
       })
     }
 
-    // validasi status
+    // validasi description (hanya jika di kirim)
+    if(description !== undefined && description !== null){
+      if(description.length < 3){
+        return res.status(400).json({
+          status: 'error',
+          message: 'Description minimal 3 karakter'
+        })
+      }
+      
+      if(description.length > 255){
+        return res.status(400).json({
+          status: 'error',
+          message: 'Description maksimal 255 karakter'
+        })
+      }
+    }
+
+    // validasi status (hanya jika di kirim)
     const validStatuses = ['pending', 'in_progress', 'completed']
 
     if(status && !validStatuses.includes(status)){
@@ -120,7 +137,7 @@ const createTask = async (req, res) => {
       })
     }
 
-    // simpan ke database
+    // simpan ke database, Insert task baru. result.insertId berisi ID task baru.
     const [result] = await db.query(
       `INSERT INTO tasks (user_id, title, description, status, due_date)
       VALUES (?, ?, ?, ?, ?)`,
@@ -133,7 +150,7 @@ const createTask = async (req, res) => {
       ]
     )
 
-    // ambil task yg di buat
+    // ambil task yg baru di buat
     const [newTask] = await db.query(
       'SELECT * FROM tasks WHERE id = ?',
       [result.insertId]
@@ -158,30 +175,11 @@ const createTask = async (req, res) => {
 // update tasks
 const updateTask = async (req, res) => {
   try{
-    // ========================================
-    // debug-1
-    // console.log("=== debug ===");
-    // console.log("req.params: ", req.params);
-    // console.log("req.body: ", req.body);
-    // ========================================
-
     const userId = req.user.userId
     const {id} = req.params
     const {title, description, status, due_date} = req.body
 
-    // ======================================================
-    // debug-1
-    // console.log("userId: ", userId);
-    // console.log("id: ", id);
-    // console.log("title: ", title);
-    // console.log("description: ", description);
-    // console.log("status: ", status);
-    // console.log("due_date: ", due_date);
-    // console.log("=== end debug ===");
-    // end debug-1
-    // ======================================================
-
-    // cek task ada dan dimiliki user?
+    // cek task ada dan dimiliki user? Cek apakah task ada & milik user sebelum update.
     const [existingTask] = await db.query(
       'SELECT * FROM tasks WHERE id = ? AND user_id = ?',
       [id, userId]
@@ -218,29 +216,22 @@ const updateTask = async (req, res) => {
       }
     }
 
-    // validasi description jika terkirim
-    if(description !== undefined) {
-      if(description.trim() === '') {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Description tidak boleh kosong'
-        })
+    // validasi description jika dikirim (bukan undefined atau null)
+      if(description !== undefined && description !== null){
+        if(description.length < 3){
+          return res.status(400).json({
+            status: 'error',
+            message: 'Description minimal 3 karakter'
+          })
+        }
+        
+        if(description.length > 255){
+          return res.status(400).json({
+            status: 'error',
+            message: 'Description maksimal 255 karakter'
+          })
+        }
       }
-
-      if(description.length < 3) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Description minimal 3 karakter'
-        })
-      }
-
-      if(description.length > 255) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Description maksimal 255 karakter'
-        })
-      }
-    }
 
     // validasi status jika dikirim
     const validStatuses = ['pending', 'in_progress', 'completed']
@@ -251,7 +242,7 @@ const updateTask = async (req, res) => {
       })
     }
 
-    // update task ke database
+    // update task ke database, Update task. Jika field tidak dikirim, pakai nilai lama dari existingTask[0]
     await db.query(
       `UPDATE tasks
       SET title = ?, description = ?, status = ?, due_date = ?

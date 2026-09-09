@@ -8,7 +8,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 
 // import dotenv (baca file .env)
-require('dotenv').config();
+// require('dotenv').config(); // dihide dahulu untuk railway
 
 // import fungsi testConnection dari config/database.js
 const {testConnection} = require('./config/database');

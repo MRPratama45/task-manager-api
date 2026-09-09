@@ -2,7 +2,7 @@
 const mysql = require('mysql2');
 
 // import dotenv (baca file .env)
-require('dotenv').config();
+// require('dotenv').config(); // dihide dahulu untuk railway
 
 // buat cenecction pool (kumpulan koneksi siap pakai)
 const pool = mysql.createPool({

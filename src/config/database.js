@@ -29,8 +29,15 @@ const testConnection = async () =>{
     return true
   }
   catch(err){
-    console.log('Database tidak terhubung, error: ', err.message);
-    return false
+    console.log('Database tidak terhubung');
+    console.log('Error detail:', err);
+    console.log('Error code:', err.code);
+    console.log('Error errno:', err.errno);
+    console.log('DB_HOST:', process.env.DB_HOST);
+    console.log('DB_PORT:', process.env.DB_PORT);
+    console.log('DB_USER:', process.env.DB_USER);
+    console.log('DB_NAME:', process.env.DB_NAME);
+    return false;
   }
 };
 

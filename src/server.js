@@ -13,6 +13,9 @@ require('dotenv').config();
 // import fungsi testConnection dari config/database.js
 const {testConnection} = require('./config/database');
 
+// import initDatabase (untuk di railyway)
+const initDatabase = require('./config/initDatabase');
+
 // import routes
 const authRoutes =  require('./routes/authRoutes')
 const testRoutes = require('./routes/testRoutes') // untuk tes route yang diproteksi dengan authMiddleware
@@ -55,7 +58,10 @@ const startServer = async () => {
   // tes koneksi database
   const isConnected = await testConnection();
 
-  if(isConnected){
+  // buat tabel otomatis jika belum ada di railways
+  const isInit = await initDatabase();
+
+  if(isConnected && isInit){
     // database berhasil -> jalankan server
     app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
@@ -76,3 +82,25 @@ app.use('/api/tasks', taskRoutes);  // semua /api/tasks/* -> taskRoute
 
 
 startServer();
+
+
+
+/**
+ * // default fungsi start server sebelum deploy ke railway
+const startServer = async () => {
+  // tes koneksi database
+  const isConnected = await testConnection();
+
+  if(isConnected){
+    // database berhasil -> jalankan server
+    app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+  })  
+  } else {
+    // database gagal -> hentikan server
+    console.log('Server tidak dapat dijalankan karena koneksi database gagal');
+    process.exit(1); // keluar dari proses dengan kode kesalahan
+  }
+  
+}
+ */

@@ -3,31 +3,33 @@ const {db} = require('../config/database')
 // get all tasks
 const getAllTasks = async (req, res) => {
   try {
-    // ambil userID dari middleware auth
+    // 1. ambil userID dari middleware auth. token sudah diverifikasi oleh authMiddleware
     const userId = req.user.userId
 
-    // ambil query parameters
+    // 2. ambil query parameters dari URL
     const {status, sort, order} = req.query
 
-    // query dasar 
+    // 3. query dasar. ? akan diganti dengan userId 
     let query = 'SELECT * FROM tasks WHERE user_id = ?'
     const params = [userId]
 
-    // filter by status
+    // 4. jika client kirim query parameter status
     if(status){
       query += ' AND status = ?' // artinya query = query + ' AND status = ?'
       params.push(status)
     }
 
-    // sorting 
+    // 5. jika client kirim query parameter sort dan order 
     if(sort && order){ // cek apakah client mengirimkan params sort dan order
       query += ` ORDER BY ${sort} ${order}`
     } else {
       query += ' ORDER BY created_at DESC'
     }
 
-    const [tasks] = await db.query(query, params) // menjalankan query ke database dengan menunggu hasil. [tasks] = hasil query untuk mengambil array hasil
+    // 6. menjalankan query ke database dengan menunggu hasil. [tasks] = hasil query untuk mengambil array hasil
+    const [tasks] = await db.query(query, params) 
 
+    // 7. kirim response
     res.json({
       status: 'success',
       total: tasks.length,
@@ -49,12 +51,13 @@ const getTaskById = async (req, res) => {
     const userId= req.user.userId
     const {id} = req.params
 
-    // Query task dengan id DAN userId. Ini memastikan user hanya bisa akses task miliknya
+    // Query task dengan id dan userId. Ini memastikan user hanya bisa akses task miliknya
     const [tasks] = await db.query(
       'SELECT * FROM tasks WHERE id = ? AND user_id = ?',
-      [id, userId]
+      [id, userId] // didapatkan dari variabel id dan userId
     )
 
+    // jika task tidak ditemukan
     if(tasks.length === 0){
       return res.status(404).json({
         status: 'error',
@@ -62,6 +65,7 @@ const getTaskById = async (req, res) => {
       })
     }
 
+    // kirim response
     res.json({
       status: 'success',
       data: tasks[0]
@@ -76,7 +80,6 @@ const getTaskById = async (req, res) => {
   }
 }
 
-
 // Buat Task Baru
 const createTask = async (req, res) => {
   try{
@@ -86,7 +89,7 @@ const createTask = async (req, res) => {
     // ambil input dari body
     const {title, description, status, due_date} = req.body
 
-    // validasi title (wajib isi)
+    // validasi 1: title (wajib isi)
     if(!title || title.trim() === ''){
       return res.status(400).json({
         status: 'error',
@@ -94,7 +97,7 @@ const createTask = async (req, res) => {
       })
     }
 
-    // validasi minimal karakter inputan title
+    // validasi 2: minimal 3 karakter inputan title
     if(title.length < 3){
       return res.status(400).json({
         status: 'error',
@@ -102,7 +105,7 @@ const createTask = async (req, res) => {
       })
     }
 
-    // validasi maximal karakter inputan
+    // validasi 3: maximal karakter inputan
     if(title.length > 50){
       return res.status(400).json({
         status: 'error',
@@ -110,7 +113,7 @@ const createTask = async (req, res) => {
       })
     }
 
-    // validasi description (hanya jika di kirim)
+    // validasi 4: description (hanya jika di kirim)
     if(description !== undefined && description !== null){
       if(description.length < 3){
         return res.status(400).json({
@@ -127,7 +130,7 @@ const createTask = async (req, res) => {
       }
     }
 
-    // validasi status (hanya jika di kirim)
+    // validasi 5: status
     const validStatuses = ['pending', 'in_progress', 'completed']
 
     if(status && !validStatuses.includes(status)){
@@ -153,7 +156,7 @@ const createTask = async (req, res) => {
     // ambil task yg baru di buat
     const [newTask] = await db.query(
       'SELECT * FROM tasks WHERE id = ?',
-      [result.insertId]
+      [result.insertId] // insertId itu merupakan salah satu response objek properti dari insert ke database yg isinya merupakan ID task baru
     )
 
     res.status(201).json({
@@ -185,6 +188,7 @@ const updateTask = async (req, res) => {
       [id, userId]
     )
 
+    // jika task tidak ditemukan
     if(existingTask.length === 0) {
       return res.status(404).json({
         status: 'error',
@@ -192,7 +196,7 @@ const updateTask = async (req, res) => {
       })
     }
 
-    // validasi title jika terkirim
+    // validasi title (jika kirim)
     if(title !== undefined) {
       if(title.trim() === '') {
         return res.status(400).json({
@@ -201,6 +205,7 @@ const updateTask = async (req, res) => {
         })
       }
 
+      // validasi minimal 3 karakter
       if(title.length < 3) {
         return res.status(400).json({
           status: 'error',
@@ -208,6 +213,7 @@ const updateTask = async (req, res) => {
         })
       }
 
+      // validasi maximal 50 karakter
       if(title.length > 50) {
         return res.status(400).json({
           status: 'error',
@@ -248,6 +254,7 @@ const updateTask = async (req, res) => {
       SET title = ?, description = ?, status = ?, due_date = ?
       WHERE id = ? AND user_id = ?`,
       [
+        // jika title tidak dikirim, pakai existingTask[0].title
         title !== undefined ? title : existingTask[0].title ,
         description !== undefined ? description : existingTask[0].description,
         status !== undefined ? status : existingTask[0].status,

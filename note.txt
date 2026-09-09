@@ -115,3 +115,16 @@ Paham REST API naming conventions
 
 3. Diagram alur lengkap
   DATABASE → CONFIG → UTILS → MIDDLEWARE → CONTROLLERS → ROUTES → SERVER → TEST
+
+--- DAY 7 ---
+✅ Penjelasan ulang taskController.js (permintaan Anda)
+  A memiliki pola yg sama yaitu ambil datadari request (req) -> Query database (db.query) -> kirim response (res.json) -> udpate database
+
+✅ Deploy database ke Railway
+
+✅ Deploy backend ke Railway
+
+✅ Test API production
+
+✅ Update README
+

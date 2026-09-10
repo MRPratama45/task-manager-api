@@ -1,6 +1,16 @@
 // import package express (framework web)
 const express = require('express');
 
+console.log('=== SEMUA ENV VARIABLES ===');
+console.log('PORT:', process.env.PORT);
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_PORT:', process.env.DB_PORT);
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_PASSWORD:', process.env.DB_PASSWORD ? 'ADA' : 'TIDAK ADA');
+console.log('DB_NAME:', process.env.DB_NAME);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('=== END ENV ===');
+
 // import package cors (agar API dapat di akses dari domain lain)
 const cors = require('cors');
 

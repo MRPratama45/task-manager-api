@@ -121,10 +121,23 @@ Paham REST API naming conventions
   A memiliki pola yg sama yaitu ambil datadari request (req) -> Query database (db.query) -> kirim response (res.json) -> udpate database
 
 ✅ Deploy database ke Railway
+  a. pakai CLI berhasil. tetapi versi web gagal (envnya tidak masuk walaupun sudah di add)
 
 ✅ Deploy backend ke Railway
+  a. pakai CLI berhasil. tetapi versi web gagal (envnya tidak masuk walaupun sudah di add)
 
 ✅ Test API production
-
+  a. berhasil semua. sudah di tes via postman
 ✅ Update README
 
+task-manager-api/
+├── src/
+│   ├── routes/
+│   │   ├── authRoutes.js    ← Endpoint auth
+│   │   ├── taskRoutes.js    ← Endpoint tasks
+│   │   └── testRoutes.js    ← Endpoint test
+│   │
+│   ├── controllers/         ← Logika bisnis
+│   ├── middleware/          ← Middleware
+│   ├── config/              ← Config database
+│   └── server.js            ← Hubungkan semua routes
